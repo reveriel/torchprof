@@ -15,7 +15,8 @@ def walk_modules(module, name="", path=()):
     yield Trace(path, len(named_children) == 0, module)
     # recursively walk into all submodules
     for name, child_module in named_children:
-        yield from walk_modules(child_module, name=name, path=path)
+        for trace in walk_modules(child_module, name=name, path=path):
+            yield trace
 
 
 class Profile(object):
@@ -147,8 +148,9 @@ def traces_to_display(traces, trace_events, show_events=False, paths=None):
             current_tree = current_tree[name]
     tree_lines = flatten_tree(tree)
 
-    # dt = ('|', '|-- ', '+-- ', ' ') # ascii
-    dt = ("\u2502", "\u251c\u2500\u2500 ", "\u2514\u2500\u2500 ", " ")  # ascii-ex
+    dt = ('|', '|-- ', '+-- ', ' ')  # ascii
+    # dt = (u"\u2502", u"\u251c\u2500\u2500 ",
+    #   u"\u2514\u2500\u2500 ", " ")  # ascii-ex
     format_lines = []
     for idx, tree_line in enumerate(tree_lines):
         depth, name, measures = tree_line
@@ -160,7 +162,7 @@ def traces_to_display(traces, trace_events, show_events=False, paths=None):
             cpu_time = tprofiler.format_time(measures.cpu_total)
             cuda_time = tprofiler.format_time(measures.cuda_total)
         pre = ""
-        next_depths = [pl[0] for pl in tree_lines[idx + 1 :]]
+        next_depths = [pl[0] for pl in tree_lines[idx + 1:]]
         current = True
         while depth:
             if current:
