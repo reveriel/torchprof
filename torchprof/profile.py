@@ -152,15 +152,20 @@ def traces_to_display(traces, trace_events, show_events=False, paths=None):
     # dt = (u"\u2502", u"\u251c\u2500\u2500 ",
     #   u"\u2514\u2500\u2500 ", " ")  # ascii-ex
     format_lines = []
+
+    def format_time(us):
+        return "{:.2f}".format(us / 1000)
+
     for idx, tree_line in enumerate(tree_lines):
         depth, name, measures = tree_line
         self_cpu_time = ""
         cpu_time = ""
         cuda_time = ""
         if measures:
-            self_cpu_time = tprofiler.format_time(measures.self_cpu_total)
-            cpu_time = tprofiler.format_time(measures.cpu_total)
-            cuda_time = tprofiler.format_time(measures.cuda_total)
+            self_cpu_time = format_time(measures.self_cpu_total)
+            self_cpu_time = format_time(measures.self_cpu_total)
+            cpu_time = format_time(measures.cpu_total)
+            cuda_time = format_time(measures.cuda_total)
         pre = ""
         next_depths = [pl[0] for pl in tree_lines[idx + 1:]]
         current = True
